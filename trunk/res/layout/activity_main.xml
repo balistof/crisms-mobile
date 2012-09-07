@@ -4,29 +4,37 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="45dip" >
+<!--         <LinearLayout -->
+<!--             android:layout_width="fill_parent" -->
+<!--             android:layout_height="45dip" > -->
 
-            <Button
-                android:id="@+id/button1"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="0"
-                android:text="@string/contact"
-                android:onClick="doLaunchContactPicker"/>
+<!--             <Button -->
+<!--                 android:id="@+id/button1" -->
+<!--                 style="?android:attr/buttonStyleSmall" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="fill_parent" -->
+<!--                 android:layout_weight="0" -->
+<!--                 android:text="@string/contact" -->
+<!--                 android:onClick="doLaunchContactPicker"/> -->
 
-            <EditText
-                android:id="@+id/toText"
-                android:layout_width="0dip"
-                android:layout_height="fill_parent"
-                android:layout_marginRight="5dip"
-                android:layout_weight="1"
-                android:hint="@string/to" 
-                android:inputType="phone"/>
+<!--             <EditText -->
+<!--                 android:id="@+id/toText" -->
+<!--                 android:layout_width="0dip" -->
+<!--                 android:layout_height="fill_parent" -->
+<!--                 android:layout_marginRight="5dip" -->
+<!--                 android:layout_weight="1" -->
+<!--                 android:hint="@string/to"  -->
+<!--                 android:inputType="phone"/> -->
 
-        </LinearLayout>
+<!--         </LinearLayout> -->
+
+        <AutoCompleteTextView
+            android:id="@+id/toTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ems="10"
+            android:hint="@string/to" />
 
         <RelativeLayout
             android:layout_width="match_parent"
