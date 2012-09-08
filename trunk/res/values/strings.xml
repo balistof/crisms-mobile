@@ -20,5 +20,7 @@
     <string name="send_general_failure">Unable to send message. Please try again&#8230;</string>
     <string name="send_success">Message sent</string>
     <string name="sender_id">Sender Id</string>
-
+    <string name="sending">Sending&#8230;</string>
+    <string name="sent">Sent</string>
+    
 </resources>

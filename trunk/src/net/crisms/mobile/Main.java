@@ -93,83 +93,15 @@ public class Main extends Activity implements OnClickListener {
         return true;
     }
     
-//    public void doLaunchContactPicker(View view) {
-//    	Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, Contacts.CONTENT_URI);
-//    	startActivityForResult(contactPickerIntent, CONTACT_PICKER_RESULT);
-//    }
-//    
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (resultCode == RESULT_OK) {
-//            switch (requestCode) {
-//            case CONTACT_PICKER_RESULT:
-//            	final EditText phoneInput = (EditText) findViewById(R.id.toText);
-//                Cursor cursor = null;  
-//                String phoneNumber = "";
-//                List<String> allNumbers = new ArrayList<String>();
-//                int phoneIdx = 0;
-//                try {  
-//                    Uri result = data.getData();  
-//                    String id = result.getLastPathSegment();  
-//                    cursor = getContentResolver().query(Phone.CONTENT_URI, null, Phone.CONTACT_ID + "=?", new String[] { id }, null);  
-//                    phoneIdx = cursor.getColumnIndex(Phone.DATA);
-//                    if (cursor.moveToFirst()) {
-//                        while (cursor.isAfterLast() == false) {
-//                            phoneNumber = cursor.getString(phoneIdx);
-//                            allNumbers.add(phoneNumber);
-//                            cursor.moveToNext();
-//                        }
-//                    } else {
-//                        //no results actions
-//                    }  
-//                } catch (Exception e) {  
-//                   //error actions
-//                } finally {  
-//                    if (cursor != null) {  
-//                        cursor.close();
-//                    }
-//
-//                    final CharSequence[] items = allNumbers.toArray(new String[allNumbers.size()]);
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
-//                    builder.setTitle("Choose a number");
-//                    builder.setItems(items, new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int item) {
-//                            String selectedNumber = items[item].toString();
-//                            selectedNumber = selectedNumber.replace("-", "");
-//                            phoneInput.setText(selectedNumber);
-//                        }
-//                    });
-//                    AlertDialog alert = builder.create();
-//                    if(allNumbers.size() > 1) {
-//                        alert.show();
-//                    } else {
-//                        String selectedNumber = phoneNumber.toString();
-//                        selectedNumber = selectedNumber.replace("-", "");
-//                        phoneInput.setText(selectedNumber);
-//                    }
-//
-//                    if (phoneNumber.length() == 0) {  
-//                        //no numbers found actions  
-//                    }  
-//                } 
-//                break;
-//            }
-//
-//        } else {
-//            // gracefully handle failure
-//            // Log.w(DEBUG_TAG, "Warning: activity result not ok");
-//        }
-//    }
-    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//    	switch (item.getItemId()) {
-//        case android.R.id.:
-    	// app icon in action bar clicked; go home
-            showPreferences();
-            return true;
-//        default:
-//            return super.onOptionsItemSelected(item);
-//    	}
+    	switch (item.getItemId()) {
+	    	case R.id.menu_settings:
+	            showPreferences();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+    	}
     }
     
     private void showPreferences() {
@@ -181,22 +113,27 @@ public class Main extends Activity implements OnClickListener {
     	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     	String userName = sharedPrefs.getString(Preferences.userNameKey, "");
     	String password = sharedPrefs.getString(Preferences.passwordKey, "");
-    	String senderId = sharedPrefs.getString(Preferences.senderIdKey, "criSMS");
+    	String senderId = sharedPrefs.getString(Preferences.senderIdKey, "");
     	EditText messageEditText = (EditText) findViewById(R.id.messageText);
     	String message = messageEditText.getText().toString();
     	TextView toTextView = (TextView) findViewById(R.id.toTextView);
     	String to = toTextView.getText().toString().replace("+", "");
     	
-    	if (to.contains("<"))
-    		to = to.substring(to.lastIndexOf("<") + 1, to.lastIndexOf(">"));
+		if (to.contains("<"))
+		{
+    		int start = to.lastIndexOf("<");
+    		to = to.substring(start + 1, to.indexOf(">", start));
+		}
     	
-    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-    		nameValuePairs.add(new BasicNameValuePair("user", userName));
-    		nameValuePairs.add(new BasicNameValuePair("password", password));
-    		nameValuePairs.add(new BasicNameValuePair("mobnumber", to));
-    		nameValuePairs.add(new BasicNameValuePair("from", senderId));
-    		nameValuePairs.add(new BasicNameValuePair("message", message));
-    		new SendMessageTask().execute(nameValuePairs);
+		// make a send message view and show this view after the to field
+		TextView sent_message_text = (TextView) findViewById(R.id.sent_message_text);
+		TextView sent_message_status = (TextView) findViewById(R.id.sent_message_status);
+		sent_message_text.setText(message);
+		sent_message_status.setText(R.string.sending);
+		sent_message_text.setVisibility(View.VISIBLE);
+		sent_message_status.setVisibility(View.VISIBLE);
+		
+    	new SendMessageTask().execute(userName, password, senderId, to, message);
     }
     
     public static String HtmlPostToGateway(String serverFile, List<NameValuePair> nameValuePairs) throws IOException
@@ -244,15 +181,19 @@ public class Main extends Activity implements OnClickListener {
 				urlConnection.disconnect();
 		}
     }
+    
+    private void AddMessageToSentFolder(String number, String message) {
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if (!sharedPrefs.getBoolean(Preferences.addToOutboxKey, false))
+			return;
+    	
+    	ContentValues values = new ContentValues();
 
-//    private void AddMessageToSentFolder(String number, String message) {
-//    	ContentValues values = new ContentValues();
-//
-//    	values.put("address", number);
-//    	values.put("body", message); 
-//
-//    	getApplicationContext().getContentResolver().insert(Uri.parse("content://sms/sent"), values);
-//    }
+    	values.put("address", number);
+    	values.put("body", message); 
+
+    	getApplicationContext().getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+    }
 
 	public void onClick(View v) {
 		switch(v.getId()) {
@@ -262,14 +203,25 @@ public class Main extends Activity implements OnClickListener {
 		}
 	}
 	
-	class SendMessageTask extends AsyncTask<List<NameValuePair>, Void, Void> {
+	class SendMessageTask extends AsyncTask<String, Void, Void> {
 
 	    private Exception exception;
 	    private String result;
+	    private String to;
+	    private String message;
 
-	    protected Void doInBackground(List<NameValuePair>... data) {
-	        try {
-	            result = Main.HtmlPostToGateway("sendsms.php", data[0]);
+	    protected Void doInBackground(String... data) {
+	        try {        	
+	        	to = data[3];
+	        	message = data[4];
+	        	List<NameValuePair> postData = new ArrayList<NameValuePair>();
+	        	postData.add(new BasicNameValuePair("user", data[0]));
+	        	postData.add(new BasicNameValuePair("password", data[1]));
+	        	postData.add(new BasicNameValuePair("from", data[2]));
+	        	postData.add(new BasicNameValuePair("mobnumber", data[3]));
+	        	postData.add(new BasicNameValuePair("message", data[4]));
+	        	
+	            result = Main.HtmlPostToGateway("sendsms.php", postData);
 	        } catch (Exception e) {
 	            this.exception = e;
 	        }
@@ -281,6 +233,10 @@ public class Main extends Activity implements OnClickListener {
 				Context context = getApplicationContext();
 				int duration = Toast.LENGTH_SHORT;
 				Toast.makeText(context, R.string.send_general_failure, duration).show();
+				TextView sent_message_text = (TextView) findViewById(R.id.sent_message_text);
+				TextView sent_message_status = (TextView) findViewById(R.id.sent_message_status);
+				sent_message_text.setVisibility(View.GONE);
+				sent_message_status.setVisibility(View.GONE);
 			}
 	    	else if (result.contains("ID")) {
 	    		EditText messageEditText = (EditText) findViewById(R.id.messageText);
@@ -290,11 +246,18 @@ public class Main extends Activity implements OnClickListener {
 				Context context = getApplicationContext();
 				int duration = Toast.LENGTH_SHORT;
 				Toast.makeText(context, R.string.send_success, duration).show();
+				TextView sent_message_status = (TextView) findViewById(R.id.sent_message_status);
+				sent_message_status.setText(R.string.sent);
+				AddMessageToSentFolder(to, message);
 			}
 			else {
 				Context context = getApplicationContext();
 				int duration = Toast.LENGTH_SHORT;
 				Toast.makeText(context, result, duration).show();
+				TextView sent_message_text = (TextView) findViewById(R.id.sent_message_text);
+				TextView sent_message_status = (TextView) findViewById(R.id.sent_message_status);
+				sent_message_text.setVisibility(View.GONE);
+				sent_message_status.setVisibility(View.GONE);
 			}
 	    }
 	 }
