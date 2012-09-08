@@ -1,32 +1,8 @@
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical" >
-
-<!--         <LinearLayout -->
-<!--             android:layout_width="fill_parent" -->
-<!--             android:layout_height="45dip" > -->
-
-<!--             <Button -->
-<!--                 android:id="@+id/button1" -->
-<!--                 style="?android:attr/buttonStyleSmall" -->
-<!--                 android:layout_width="wrap_content" -->
-<!--                 android:layout_height="fill_parent" -->
-<!--                 android:layout_weight="0" -->
-<!--                 android:text="@string/contact" -->
-<!--                 android:onClick="doLaunchContactPicker"/> -->
-
-<!--             <EditText -->
-<!--                 android:id="@+id/toText" -->
-<!--                 android:layout_width="0dip" -->
-<!--                 android:layout_height="fill_parent" -->
-<!--                 android:layout_marginRight="5dip" -->
-<!--                 android:layout_weight="1" -->
-<!--                 android:hint="@string/to"  -->
-<!--                 android:inputType="phone"/> -->
-
-<!--         </LinearLayout> -->
+        android:orientation="vertical">
 
         <AutoCompleteTextView
             android:id="@+id/toTextView"
@@ -35,6 +11,41 @@
             android:layout_weight="0"
             android:ems="10"
             android:hint="@string/to" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:layout_marginTop="10dip"
+            android:layout_weight="0"
+            android:background="#F0F0F0"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/sent_message_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="10dip"
+                android:layout_weight="0"
+                android:text="This is the message which will be filled by the message entered by the user."
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/sent_message_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="10dip"
+                android:layout_weight="0"
+                android:text="Status"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#868686"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"

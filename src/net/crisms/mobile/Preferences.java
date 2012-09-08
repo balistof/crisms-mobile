@@ -30,7 +30,7 @@ public class Preferences extends Activity implements OnClickListener {
 
 	public static final String userNameKey = "username";
 	public static final String passwordKey = "password";
-	private static final String addToOutboxKey = "addtooutbox";
+	public static final String addToOutboxKey = "addtooutbox";
 	public static final String senderIdKey = "senderid";
 	
     @Override
